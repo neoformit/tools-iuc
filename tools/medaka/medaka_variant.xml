@@ -1,4 +1,4 @@
-<tool id="medaka_variant_pipeline" name="medaka variant pipeline" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@">
+<tool id="medaka_haploid_variant_pipeline" name="medaka haploid variant pipeline" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@">
     <description>via neural networks</description>
     <macros>
         <import>macros.xml</import>
@@ -13,38 +13,41 @@ cp '${i}' alignment.bam &&
 cp '${i.metadata.bam_index}' alignment.bam.bai &&
 
 ## run
-medaka_variant
-## optional
-#if $r:
-    -r '$r'
-#end if
+medaka_haploid_variant
+
+## redundant?
+## #if $r:
+##     -r '$r'
+## #end if
+
 -o results
--s $s
 -m $m
 -t \${GALAXY_SLOTS:-4}
--p
 -b $b
--N $N
--P $P
-$U
-$S
-## required
 -i alignment.bam
--f reference.fa
+-r reference.fa
+
+## Redundant params:
+## -s $s  ## => Now bool "Perform read realignment when annotating variants"
+##-p
+##-N $N
+##-P $P
+##$U
+##$S
 
 2>&1 | tee '$out_log'
     ]]></command>
     <inputs>
         <param argument="-i" type="data" format="bam" label="Select input reads" help="Read groups are currently ignored, so the bam should only contain reads from a single sample."/>
         <expand macro="reference"/>
-        <param argument="-r" type="text" value="" optional="true" label="Set region string(s)" help="If not provided, will process all contigs."/>
-        <expand macro="model" argument="-s" label="Select model for initial SNP calling from mixed reads prior to phasing"/>
-        <expand macro="model" argument="-m" label="Select model for final variant calling from phased reads"/>
+        <!-- <param argument="-r" type="text" value="" optional="true" label="Set region string(s)" help="If not provided, will process all contigs."/> -->
+        <!-- <expand macro="model-haplo" argument="-s" label="Select model for initial SNP calling from mixed reads prior to phasing"/> -->
+        <expand macro="model-haplo" argument="-m" label="Select model for final variant calling from phased reads"/>
         <expand macro="b"/>
-        <param argument="-N" type="integer" value="9" label="Set threshold for filtering indels in final VCF"/>
+        <!-- <param argument="-N" type="integer" value="9" label="Set threshold for filtering indels in final VCF"/>
         <param argument="-P" type="integer" value="8" label="Set threshold for filtering SNPs in final VCF"/>
         <param argument="-U" type="boolean" truevalue="-U" falsevalue="" label="Avoid filtering of final VCF?"/>
-        <param argument="-S" type="boolean" truevalue="-S" falsevalue="" label="Stop after initial SNP calling from mixed reads prior to phasing?"/>
+        <param argument="-S" type="boolean" truevalue="-S" falsevalue="" label="Stop after initial SNP calling from mixed reads prior to phasing?"/> -->
         <param name="out" type="select" multiple="true" optional="false" label="Select out file(s)5">
             <option value="round_0_hap_mixed_phased_bam">round_0_hap_mixed_phased.bam</option>
             <option value="round_0_hap_mixed_phased_vcf">round_0_hap_mixed_phased.vcf</option>
