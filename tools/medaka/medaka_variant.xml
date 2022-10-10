@@ -42,7 +42,7 @@ medaka_haploid_variant
         <expand macro="reference"/>
         <!-- <param argument="-r" type="text" value="" optional="true" label="Set region string(s)" help="If not provided, will process all contigs."/> -->
         <!-- <expand macro="model-haplo" argument="-s" label="Select model for initial SNP calling from mixed reads prior to phasing"/> -->
-        <expand macro="model-haplo" argument="-m" label="Select model for final variant calling from phased reads"/>
+        <expand macro="model-haploid" argument="-m" label="Select model for final variant calling from phased reads"/>
         <expand macro="b"/>
         <!-- <param argument="-N" type="integer" value="9" label="Set threshold for filtering indels in final VCF"/>
         <param argument="-P" type="integer" value="8" label="Set threshold for filtering SNPs in final VCF"/>
