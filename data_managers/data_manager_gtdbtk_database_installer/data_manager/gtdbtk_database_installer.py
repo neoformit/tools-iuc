@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
 import argparse
+import certifi
 import json
 import os
 import shutil
+import ssl
 import sys
 import tarfile
 from urllib.parse import urlparse
 from urllib.request import Request
-from urllib.request import urlopen
+from urllib.request import build_opener, Request, HTTPSHandler
 
 
 def url_download(url, target_directory):
@@ -17,8 +19,11 @@ def url_download(url, target_directory):
     src = None
     dst = None
     try:
+        context=ssl.create_default_context(cafile=certifi.where())
+        https_handler = HTTPSHandler(context=context)
+        opener = build_opener(https_handler)
         req = Request(url)
-        src = urlopen(req)
+        src = opener.open(req)
         with open(tarball, 'wb') as dst:
             while True:
                 chunk = src.read(2**10)

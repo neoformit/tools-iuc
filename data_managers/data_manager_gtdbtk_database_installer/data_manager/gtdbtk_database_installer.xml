@@ -7,6 +7,8 @@
     </macros>
     <requirements>
         <requirement type="package" version="3.10.2">python</requirement>
+        <!-- https://askubuntu.com/questions/1401379/certificate-verify-failed-error -->
+        <requirement type="package" version="">certifi</requirement>
     </requirements>
     <command>
     <![CDATA[
