@@ -3,6 +3,7 @@
     <macros>
         <import>macros.xml</import>
     </macros>
+    <expand macro="bio_tools"/>
     <expand macro="requirements"/>
     <expand macro="version_command"/>
     <command detect_errors="exit_code"><![CDATA[
@@ -46,6 +47,12 @@ alignment.bam ## bam
 '$out_result' ## output
 
 2>&1 | tee '$out_log'
+
+## Stitch output .h5 files
+#if 'stitch' in $out:
+&& medaka stitch '$out_result' '$out_result_stitched'
+#end if
+
     ]]></command>
     <inputs>
         <param argument="bam" type="data" format="bam" label="Select input alignment"/>
@@ -74,7 +81,8 @@ alignment.bam ## bam
         <param argument="--tag_value" type="integer" value="" optional="true" label="Set tag value"/>
         <param argument="--tag_keep_missing" type="boolean" truevalue="--tag_keep_missing" falsevalue="" label="Keep alignments when tag is missing?"/>
         <param name="out" type="select" multiple="true" optional="false" label="Select output file(s)">
-            <option value="result" selected="true">Result</option>
+            <option value="result" selected="true">Result - h5</option>
+            <option value="stitch">Result - FASTA</option>
             <option value="log">Log</option>
         </param>
     </inputs>
@@ -82,6 +90,10 @@ alignment.bam ## bam
         <!-- standard -->
         <data name="out_result" format="h5" label="${tool.name} on ${on_string}: Result">
             <filter>'result' in out</filter>
+        </data>
+        <!-- fasta output (medaka stitch) -->
+        <data name="out_result_stitched" format="fasta" label="${tool.name} on ${on_string}: Stitched result">
+            <filter>'stitch' in out</filter>
         </data>
         <!-- optional -->
         <data name="out_log" format="txt" label="${tool.name} on ${on_string}: Log">
@@ -108,10 +120,15 @@ alignment.bam ## bam
             <param name="check_output" value="true"/>
             <param name="save_features" value="true"/>
             <param name="tag_keep_missing" value="true"/>
-            <param name="out" value="result,log"/>
+            <param name="out" value="result,stitch,log"/>
             <output name="out_result">
                 <assert_contents>
                     <has_size value="37088"/>
+                </assert_contents>
+            </output>
+            <output name="out_result_stitched">
+                <assert_contents>
+                    <has_size value="0"/>
                 </assert_contents>
             </output>
             <output name="out_log">
